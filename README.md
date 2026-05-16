@@ -86,7 +86,7 @@ These are inert strings in a CSV — they only become dangerous if passed unsani
 
 | File | Description |
 |---|---|
-| `messy_data_generator.html` | Standalone browser tool — no server, no dependencies |
+| `index.html` | Standalone browser tool — no server, no dependencies |
 | `messy_data_generator.py` | Python CLI script — no third-party dependencies |
 
 ---
