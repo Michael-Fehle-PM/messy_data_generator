@@ -369,8 +369,9 @@ function generate() {
     for(var fi=0;fi<fields.length;fi++){
       var v=String(fields[fi].fn(i,ctx));
       ctx[fields[fi].name]=v;
-      if(chance('newlines_in_fields',0.04)) v+='\n(continued)';
-      if(chance('encoding_artifacts',0.05)) v+='\uFFFD';
+      var isNumeric=['id','age','salary','score'].indexOf(fields[fi].name)>=0;
+      if(!isNumeric && chance('newlines_in_fields',0.04)) v+='\n(continued)';
+      if(!isNumeric && chance('encoding_artifacts',0.05)) v+='\uFFFD';
       vals.push(v);
     }
     var row;
