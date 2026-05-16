@@ -616,7 +616,7 @@ function makeCity() {
 function makeNotes() {
   if (chance('null_empty', 0.15)) return '';
   if (chance('null_string', 0.08)) return pick(['NULL','None','null','NaN']);
-  if (chance('html_injection', 0.05)) return pick(['<b>urgent</b>','<script>alert(1)<\/script>','<!-- comment -->']);
+  if (chance('html_injection', 0.05)) return pick(['<b>urgent</b>','<i>flagged</i>','<!-- comment -->','<br>','&amp;nbsp;']);
   const base = pick(['Processed','processed','PROCESSED','Pending review','Follow up needed','Done','done','complete','Complete','COMPLETE']);
   return maybeInject(base);
 }
