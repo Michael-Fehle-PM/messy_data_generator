@@ -408,13 +408,7 @@
     <div class="toggle-text">
       <div class="toggle-title">SQL &amp; script injection strings</div>
       <div class="toggle-desc">Sprinkles adversarial payloads into text fields — classic SQLi patterns, XSS, and command injection. For testing parameterised queries, input sanitisation, and WAF rules.</div>
-      <div id="injectionExamples" style="display:none; margin-top:6px;">
-        <span class="injection-tag">' OR '1'='1</span>
-        <span class="injection-tag">'; DROP TABLE users;--</span>
-        <span class="injection-tag">1' UNION SELECT null--</span>
-        <span class="injection-tag">&lt;script&gt;alert(1)&lt;/script&gt;</span>
-        <span class="injection-tag">../../../etc/passwd</span>
-      </div>
+      <div id="injectionExamples" style="display:none; margin-top:6px;"></div>
     </div>
   </div>
 
@@ -494,12 +488,28 @@ function maybeInject(value) {
   return value;
 }
 
+function htmlEscape(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
 function toggleInjection() {
   injectionEnabled = !injectionEnabled;
   const toggle = document.getElementById('injectionToggle');
   const examples = document.getElementById('injectionExamples');
   toggle.classList.toggle('armed', injectionEnabled);
-  examples.style.display = injectionEnabled ? 'block' : 'none';
+  if (injectionEnabled) {
+    const previews = ["' OR '1'='1", "'; DROP TABLE users;--", "1' UNION SELECT null--", "<script>alert(1)</script>", "../../../etc/passwd"];
+    examples.innerHTML = previews.map(p => `<span class="injection-tag">${htmlEscape(p)}</span>`).join('');
+    examples.style.display = 'block';
+  } else {
+    examples.style.display = 'none';
+    examples.innerHTML = '';
+  }
   updateTags();
 }
 
@@ -757,16 +767,36 @@ function generate() {
   document.getElementById('outputMeta').textContent =
     `${nRows.toLocaleString()} rows × ${nFields} fields  ·  ${fileSizeKB} KB`;
 
-  const injStat = injectionEnabled
-    ? `<div class="stat-card" style="border:1px solid var(--red-border);background:var(--red-bg)"><div class="stat-label" style="color:var(--red-text)">injection hits</div><div class="stat-value" style="color:var(--red-text)">${injHits}</div></div>`
-    : `<div class="stat-card"><div class="stat-label">file size</div><div class="stat-value">${fileSizeKB}K</div></div>`;
+  const statsRow = document.getElementById('statsRow');
+  statsRow.innerHTML = '';
 
-  document.getElementById('statsRow').innerHTML = `
-    <div class="stat-card"><div class="stat-label">total cells</div><div class="stat-value">${(nRows*nFields).toLocaleString()}</div></div>
-    <div class="stat-card"><div class="stat-label">~empty cells</div><div class="stat-value">${emptyCells}</div></div>
-    <div class="stat-card"><div class="stat-label">broken rows</div><div class="stat-value">${brokenRows}</div></div>
-    ${injStat}
-  `;
+  const stats = [
+    { label: 'total cells', value: (nRows*nFields).toLocaleString(), danger: false },
+    { label: '~empty cells', value: emptyCells, danger: false },
+    { label: 'broken rows', value: brokenRows, danger: false },
+    injectionEnabled
+      ? { label: 'injection hits', value: injHits, danger: true }
+      : { label: 'file size', value: fileSizeKB + 'K', danger: false },
+  ];
+
+  stats.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    if (s.danger) {
+      card.style.cssText = 'border:1px solid var(--red-border);background:var(--red-bg)';
+    }
+    const label = document.createElement('div');
+    label.className = 'stat-label';
+    if (s.danger) label.style.color = 'var(--red-text)';
+    label.textContent = s.label;
+    const val = document.createElement('div');
+    val.className = 'stat-value';
+    if (s.danger) val.style.color = 'var(--red-text)';
+    val.textContent = s.value;
+    card.appendChild(label);
+    card.appendChild(val);
+    statsRow.appendChild(card);
+  });
 
   document.getElementById('outputArea').classList.add('visible');
 }
