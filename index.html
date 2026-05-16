@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Messy Data Generator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -370,8 +371,8 @@ function generate() {
       var v=String(fields[fi].fn(i,ctx));
       ctx[fields[fi].name]=v;
       var isNumeric=['id','age','salary','score'].indexOf(fields[fi].name)>=0;
-      if(!isNumeric && chance('newlines_in_fields',0.04)) v+='\n(continued)';
-      if(!isNumeric && chance('encoding_artifacts',0.05)) v+='\uFFFD';
+      if(!isNumeric && chance('newlines_in_fields',0.01)) v+='\n(continued)';
+      if(!isNumeric && chance('encoding_artifacts',0.02)) v+='\uFFFD';
       vals.push(v);
     }
     var row;
